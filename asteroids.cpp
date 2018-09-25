@@ -1,4 +1,4 @@
-//
+//Modified by: D'Angelo Felix
 //
 //
 //
@@ -60,6 +60,7 @@ class Global {
 public:
 	int xres, yres;
 	char keys[65536];
+	bool credits;
 	Global() {
 		xres = 1250;
 		yres = 900;
@@ -463,6 +464,9 @@ int check_keys(XEvent *e)
 	switch (key) {
 		case XK_Escape:
 			return 1;
+		case XK_c:
+			gl.credits ^= true;
+			break;
 		case XK_f:
 			break;
 		case XK_s:
@@ -739,6 +743,21 @@ void render()
 	Rect r;
 	glClear(GL_COLOR_BUFFER_BIT);
 	//
+	if (gl.credits) {
+	    r.bot = gl.yres - 100;
+	    r.left = 530;
+	    r.center = 0;
+	    ggprint16(&r, 16, 0x00ffffff, "Credits");
+	    extern void creditsD(int x, int y);
+	    creditsD(500,gl.yres-150);
+	    extern void ShowCredits(int x, int y);
+	    ShowCredits(500,gl.yres-200);
+	    extern void creditJosh(int x, int y);
+	    creditJosh(500,gl.yres-250);
+	    extern void showAndresName(int x, int y);
+	    showAndresName(500,gl.yres-300);
+	    return;
+	}
 	r.bot = gl.yres - 20;
 	r.left = 10;
 	r.center = 0;
