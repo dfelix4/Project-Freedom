@@ -12,6 +12,6 @@ void ShowCredits(int x, int y)
 	r.bot =  y;
         r.left = x;
         r.center = 0;
-     ggprint16b(&r, 16, 0x00ff0000, "Credits: \n Juan Orozco\n ");
+     ggprint16(&r, 16, 0x00ff0000, "Credits: \n Juan Orozco\n ");
 
 }
