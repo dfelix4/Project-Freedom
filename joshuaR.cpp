@@ -1,3 +1,7 @@
+//Author: Joshua Rodriguez
+//Date: 9-26-18
+
+
 #include <iostream>
 #include "fonts.h"
 using namespace std;

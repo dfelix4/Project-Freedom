@@ -1,3 +1,6 @@
+//Author: D'Angelo Felix
+//Date: 9/26/18
+
 #include "fonts.h"
 #include<iostream>
 using namespace std;

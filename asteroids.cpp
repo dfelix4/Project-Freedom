@@ -1,7 +1,8 @@
 //Modified by: D'Angelo Felix
-//
-//
-//
+//             Juan Orozco	
+//             Joshua Rodriguez
+//             Andres Zamora
+//Date Modified: 9/26/18             
 //program: asteroids.cpp
 //author:  Gordon Griesel
 //date:    2014 - 2018

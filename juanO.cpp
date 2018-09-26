@@ -1,3 +1,6 @@
+//Author: Juan Orozco
+//Date: 9/26/18
+
 #include <iostream>
 #include <cstdlib>
 #include <cstring>
