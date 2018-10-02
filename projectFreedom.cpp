@@ -109,7 +109,7 @@ public:
 			unlink(ppmname);
 	}
 };
-Image img[4] = {"./dog.jpg",
+Image img[4] = {"./notperfect.jpg",
     		"./spongebob.jpg",
     		"./Noblelogo.jpg",
 		"./tiger.jpg"};
@@ -118,7 +118,7 @@ public:
 	int xres, yres;
 	char keys[65536];
 	bool credits;
-	GLuint dogTexture; // D, change this later
+	GLuint perfectTexture; // D, change this later
 	GLuint nobleTexture;
 	GLuint tigerTexture;
 	GLuint spongebobTexture;
@@ -378,7 +378,7 @@ void init_opengl()
 {
 	//OpenGL initialization
 	glGenTextures(1, &gl.nobleTexture);
-	glGenTextures(1, &gl.dogTexture);
+	glGenTextures(1, &gl.perfectTexture);
 	glGenTextures(1, &gl.tigerTexture);
 	glGenTextures(1, &gl.spongebobTexture);
 	//noble texture
@@ -399,7 +399,7 @@ void init_opengl()
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w3, h3, 0,
 		GL_RGB, GL_UNSIGNED_BYTE, img[2].data);
 	
-	glBindTexture(GL_TEXTURE_2D, gl.dogTexture);
+	glBindTexture(GL_TEXTURE_2D, gl.perfectTexture);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, w1, h1, 0,
@@ -858,7 +858,7 @@ void show_credits()
 	showAndresName(500,gl.yres-450);
 	
 	extern void showDPic(int, int, GLuint);
-	showDPic(400, gl.yres-150, gl.dogTexture);
+	showDPic(400, gl.yres-150, gl.perfectTexture);
 	extern void JuanPicture(int, int, GLuint);
 	JuanPicture(400, gl.yres-250, gl.spongebobTexture);
 	extern void showJoshPicture(int, int, GLuint);
