@@ -16,6 +16,7 @@
 #include <unistd.h>
 #include <iostream>
 #include "fonts.h"
+#include <GL/glx.h>
 using namespace std;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 int score = 0;
@@ -27,6 +28,23 @@ void creditJosh(int x, int y)
     r.left = x;
     r.center = 0;
     ggprint16(&r, 16, 0x00ffff00, "\nThe Best Around - Joshua Rodriguez\n");
+}
+void showJoshPicture(int x, int y, GLuint texid) {
+	//show Noble team logo
+    	int wid = 50;
+	glPushMatrix();
+	glTranslatef(x,y,0);
+	glBindTexture(GL_TEXTURE_2D, texid);
+	glColor3ub(255,255,255);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+	glEnd();
+	glPopMatrix();
+
+	return;
 }
 //Setup score based on timer - Unfinished
 int timeTotal(struct timespec* gTime) 
