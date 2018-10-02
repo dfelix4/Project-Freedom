@@ -110,15 +110,15 @@ public:
 	}
 };
 Image img[4] = {"./dog.jpg",
-    		"./spongebob.jpg"
-    		"./Noblelogo.jpg"
+    		"./spongebob.jpg",
+    		"./Noblelogo.jpg",
 		"./tiger.jpg"};
 class Global {
 public:
 	int xres, yres;
 	char keys[65536];
 	bool credits;
-	GLunit dogTexture; // D, change this later
+	GLuint dogTexture; // D, change this later
 	GLuint nobleTexture;
 	GLuint tigerTexture;
 	GLuint spongebobTexture;
@@ -857,14 +857,14 @@ void show_credits()
 	extern void showAndresName(int x, int y);
 	showAndresName(500,gl.yres-450);
 	
-	extern void showDPic(int, int, GLunit);
+	extern void showDPic(int, int, GLuint);
 	showDPic(400, gl.yres-150, gl.dogTexture);
 	extern void JuanPicture(int, int, GLuint);
 	JuanPicture(400, gl.yres-250, gl.spongebobTexture);
 	extern void showJoshPicture(int, int, GLuint);
 	showJoshPicture(400, gl.yres-350, gl.nobleTexture);
 	extern void showAndresPic(int, int, GLuint);
-	showAndresPic(400, gl.yres-450, gl.tigerTexture)
+	showAndresPic(400, gl.yres-450, gl.tigerTexture);
 	
 }
 void render()

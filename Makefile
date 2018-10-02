@@ -1,5 +1,5 @@
 #
-# Makefile for asteroids game
+# Makefile for 50 shades of Freedom game
 #
 # Enter one of the following
 #
@@ -12,14 +12,14 @@ CFLAGS = -I ./include
 #LFLAGS = -lrt -lX11 -lGLU -lGL -pthread -lm
 LFLAGS = -lrt -lX11 -lGL
 
-all: asteroids
+all: projectFreedom
 
-asteroids: asteroids.cpp log.cpp timers.cpp dangeloF.cpp
-	g++ $(CFLAGS) asteroids.cpp log.cpp timers.cpp dangeloF.cpp \
+projectFreedom: projectFreedom.cpp log.cpp timers.cpp dangeloF.cpp
+	g++ $(CFLAGS) projectFreedom.cpp log.cpp timers.cpp dangeloF.cpp \
 	    joshuaR.cpp juanO.cpp andresZ.cpp \
-	libggfonts.a   -Wall $(LFLAGS) -o asteroids
+	libggfonts.a   -Wall $(LFLAGS) -o projectFreedom
 
 clean:
-	rm -f asteroids
+	rm -f projectFreedom
 	rm -f *.o
 
