@@ -30,10 +30,20 @@ void creditJosh(int x, int y)
     ggprint16(&r, 16, 0x00ffff00, "\nThe Best Around - Joshua Rodriguez\n");
 }
 void showJoshPicture(int x, int y, GLuint texid) {
+                static float angle = 0.0f;
+                float fx = (float)x;
+                float fy = (float)y;
+		angle += 0.5f;
+                fx += cos(angle) * 10.0f;
+                fy += sin(angle) * 10.0f;
+
+                glColor3ub(255,255,255);
+                int wid = 40;
+                glPushMatrix();
+
+                glTranslatef(x,y,0);
+                glRotatef(angle, 0.0f, 0.0f ,1.0f);
 	//show Noble team logo
-    	int wid = 50;
-	glPushMatrix();
-	glTranslatef(x,y,0);
 	glBindTexture(GL_TEXTURE_2D, texid);
 	glColor3ub(255,255,255);
 	glBegin(GL_QUADS);

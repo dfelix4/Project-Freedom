@@ -20,11 +20,21 @@ void ShowCredits(int x, int y)
 }
 void JuanPicture(int x, int y, GLuint texid)
 {
-    glColor3ub(255,255,255);
-    int wid=30;
-    glPushMatrix();
-    glTranslatef(x, y, 0);
-    glBindTexture(GL_TEXTURE_2D, texid);
+                static float angle = 0.0f;
+                float fx = (float)x;
+                float fy = (float)y;
+		angle -= 1.0f;
+                fx += cos(angle) * 10.0f;
+                fy += sin(angle) * 10.0f;
+
+                glColor3ub(255,255,255);
+                int wid = 40;
+                glPushMatrix();
+
+                glTranslatef(x,y,0);
+                glRotatef(angle, 0.0f, 0.0f ,1.0f);
+    
+		glBindTexture(GL_TEXTURE_2D, texid);
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
     glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
