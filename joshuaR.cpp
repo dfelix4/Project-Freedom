@@ -31,14 +31,11 @@ void creditJosh(int x, int y)
 }
 void showJoshPicture(int x, int y, GLuint texid) 
 {
-    static float angle = 0.0f;
+    //Show credit picture and animate it
     static float direction = 0.0f;
     float fx = 0;
-    float fy = 0;
-    angle += 0.5f;
     direction +=0.1f;
     fx += sin(direction)*400.0f;
-    fy += sin(direction) *200.0f;
 
     glColor3ub(255,255,255);
     int wid = 40;
