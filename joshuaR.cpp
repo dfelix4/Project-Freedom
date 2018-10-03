@@ -10,9 +10,9 @@
 //      Setup sound to be able to play sounds for hit, music, shoot and powerups
 //
 #include <ctgmath>
-#include <iostream>
-#include <cmath>
-#include <ctime>
+#include <iostream> //Testing purposes
+#include <cmath> //Math functions
+#include <ctime> //For time calculations
 #include <unistd.h>
 #include <iostream>
 #include "fonts.h"
@@ -29,32 +29,34 @@ void creditJosh(int x, int y)
     r.center = 0;
     ggprint16(&r, 16, 0x00ffff00, "\nThe Best Around - Joshua Rodriguez\n");
 }
-void showJoshPicture(int x, int y, GLuint texid) {
-                static float angle = 0.0f;
-                float fx = (float)x;
-                float fy = (float)y;
-		angle += 0.5f;
-                fx += cos(angle) * 10.0f;
-                fy += sin(angle) * 10.0f;
+void showJoshPicture(int x, int y, GLuint texid) 
+{
+    static float angle = 0.0f;
+    static float direction = 0.0f;
+    float fx = 0;
+    float fy = 0;
+    angle += 0.5f;
+    direction +=0.1f;
+    fx += sin(direction)*400.0f;
+    fy += sin(direction) *200.0f;
 
-                glColor3ub(255,255,255);
-                int wid = 40;
-                glPushMatrix();
+    glColor3ub(255,255,255);
+    int wid = 40;
+    glPushMatrix();
 
-                glTranslatef(x,y,0);
-                glRotatef(angle, 0.0f, 0.0f ,1.0f);
-	//show Noble team logo
-	glBindTexture(GL_TEXTURE_2D, texid);
-	glColor3ub(255,255,255);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
-	glEnd();
-	glPopMatrix();
+    glTranslatef(x+fx,y,0);
+    //show Noble team logo
+    glBindTexture(GL_TEXTURE_2D, texid);
+    glColor3ub(255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+    glEnd();
+    glPopMatrix();
 
-	return;
+    return;
 }
 //Setup score based on timer - Unfinished
 int timeTotal(struct timespec* gTime) 
