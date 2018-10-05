@@ -58,9 +58,9 @@ void showJoshPicture(int x, int y, GLuint texid)
 //Setup score based on timer - Unfinished
 int timeTotal(struct timespec* gTime) 
 {                       //Function to calculate current time to an int
-                        //Add timespec struct in global class and use
-                        //clock_gettime(CLOCK_REALTIME, &'structName')
-                        //to pass in for g_time
+    //Add timespec struct in global class and use
+    //clock_gettime(CLOCK_REALTIME, &'structName')
+    //to pass in for g_time
     struct timespec rTime;
     clock_gettime(CLOCK_REALTIME, &rTime);
     double time = timeDiff(gTime, &rTime);
@@ -75,9 +75,9 @@ void scoreAccumulator(int multiplier, int kills, struct timespec* global)
     return;
 }               
 int getScore()
-                        //Call anytime you need score 
+    //Call anytime you need score 
 {               
     return(score);
 }
 
-    
+

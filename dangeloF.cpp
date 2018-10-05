@@ -16,27 +16,27 @@ void creditsD(int x, int y)
 }
 void showDPic(int x, int y, GLuint textid)
 {
-                static float angle = 0.0f;
-                float fx = (float)x;
-                float fy = (float)y;
-		angle += 0.5f;
-                //fx += sin(angle);
-		fx += cos(angle) * 10.0f;
-                fy += sin(angle) * 10.0f;
+    static float angle = 0.0f;
+    float fx = (float)x;
+    float fy = (float)y;
+    angle += 0.5f;
+    //fx += sin(angle);
+    fx += cos(angle) * 10.0f;
+    fy += sin(angle) * 10.0f;
 
-                glColor3ub(255,255,255);
-                int wid = 40;
-                glPushMatrix();
+    glColor3ub(255,255,255);
+    int wid = 40;
+    glPushMatrix();
 
-                glTranslatef(x,y,0);
-                glRotatef(angle, 0.0f, 0.0f ,1.0f);
-                
-		glBindTexture(GL_TEXTURE_2D, textid);
-                glBegin(GL_QUADS);
-                glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-                glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-                glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-                glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
-                glEnd();
-                glPopMatrix();
+    glTranslatef(x,y,0);
+    glRotatef(angle, 0.0f, 0.0f ,1.0f);
+
+    glBindTexture(GL_TEXTURE_2D, textid);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+    glEnd();
+    glPopMatrix();
 }
