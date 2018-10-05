@@ -109,10 +109,10 @@ class Image {
                 unlink(ppmname);
         }
 };
-Image img[4] = {"./notperfect.jpg",
-    "./spongebob.jpg",
-    "./Noblelogo.jpg",
-    "./tiger.jpg"};
+Image img[4] = {"./images/notperfect.jpg",
+    "./images/spongebob.jpg",
+    "./images/Noblelogo.jpg",
+    "./images/tiger.jpg"};
 class Global {
     public:
         int xres, yres;
