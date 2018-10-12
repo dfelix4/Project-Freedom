@@ -109,21 +109,25 @@ class Image {
                 unlink(ppmname);
         }
 };
-Image img[4] = {"./images/notperfect.jpg",
+Image img[6] = {
+    "./images/notperfect.jpg",
     "./images/spongebob.jpg",
     "./images/Noblelogo.jpg",
-    "./images/tiger.jpg"};
+    "./images/tiger.jpg",
+    "./images/eagle.jpg",
+    "./images/Background.jpg"
+};
+
 class Global {
     public:
         int xres, yres;
         char keys[65536];
         bool credits;
-        GLuint perfectTexture; // D, change this later
+        GLuint perfectTexture;
         GLuint nobleTexture;
         GLuint tigerTexture;
         GLuint spongebobTexture;
         Global() {
-
             xres = 1250;
             yres = 900;
             memset(keys, 0, 65536);
@@ -188,8 +192,13 @@ class Game {
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
         bool mouseThrustOn;
+        struct timespec gTime;
+        GLuint eagleSprite;
+        GLuint eagleNone;
+        GLuint backgroundTexture;
     public:
         Game() {
+            clock_gettime(CLOCK_REALTIME, &gTime);
             ahead = NULL;
             barr = new Bullet[MAX_BULLETS];
             nasteroids = 0;
@@ -373,50 +382,29 @@ int main()
     logClose();
     return 0;
 }
+unsigned char* buildAlphaData(Image* img) {
+    int i;
+    int a,b,c;
+    unsigned char *newdata, *ptr;
+    unsigned char *data = (unsigned char*)img->data;
+    newdata = (unsigned char*)malloc(img->width * img->height * 4);
+    ptr = newdata;
+    for (i = 0; i< img->width * img->height *3; i+=3) {
+        a = *(data+0);
+        b = *(data+1);
+        c = *(data+2);
+        *(ptr+0) = a;
+        *(ptr+1) = b;
+        *(ptr+2) = c;
 
+        *(ptr+3) = (a|b|c);
+        ptr += 4;
+        data += 3;
+    }
+    return newdata;
+}
 void init_opengl()
 {
-    //OpenGL initialization
-    glGenTextures(1, &gl.nobleTexture);
-    glGenTextures(1, &gl.perfectTexture);
-    glGenTextures(1, &gl.tigerTexture);
-    glGenTextures(1, &gl.spongebobTexture);
-    //noble texture
-    int w1, w2, w3, w4;
-    int h1, h2, h3, h4;
-    w1 = img[0].width;
-    h1 = img[0].height;
-    w2 = img[1].width;
-    h2 = img[1].height;
-    w3 = img[2].width;
-    h3 = img[2].height;
-    w4 = img[3].width;
-    h4 = img[3].height;
-
-    glBindTexture(GL_TEXTURE_2D, gl.nobleTexture);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, w3, h3, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, img[2].data);
-
-    glBindTexture(GL_TEXTURE_2D, gl.perfectTexture);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, w1, h1, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, img[0].data);
-
-    glBindTexture(GL_TEXTURE_2D, gl.tigerTexture);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, w4, h4, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, img[3].data);
-
-    glBindTexture(GL_TEXTURE_2D, gl.spongebobTexture);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, w2, h2, 0,
-            GL_RGB, GL_UNSIGNED_BYTE, img[1].data);
-
     glViewport(0, 0, gl.xres, gl.yres);
     //Initialize matrices
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -434,6 +422,74 @@ void init_opengl()
     //Do this to allow fonts
     glEnable(GL_TEXTURE_2D);
     initialize_fonts();
+    //OpenGL initialization
+    glGenTextures(1, &gl.nobleTexture);
+    glGenTextures(1, &gl.perfectTexture);
+    glGenTextures(1, &gl.tigerTexture);
+    glGenTextures(1, &gl.spongebobTexture);
+    glGenTextures(1, &g.eagleSprite);
+    glGenTextures(1, &g.backgroundTexture);
+    
+    //noble texture
+    int w1, w2, w3, w4, w5, w6;
+    int h1, h2, h3, h4, h5, h6;
+    w1 = img[0].width;
+    h1 = img[0].height;
+    w2 = img[1].width;
+    h2 = img[1].height;
+    w3 = img[2].width;
+    h3 = img[2].height;
+    w4 = img[3].width;
+    h4 = img[3].height;
+    w5 = img[4].width;
+    h5 = img[4].height;
+    w6 = img[5].width;
+    h6 = img[5].height;
+
+   
+    glBindTexture(GL_TEXTURE_2D, gl.perfectTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w1, h1, 0,
+            GL_RGB, GL_UNSIGNED_BYTE, img[0].data);
+    
+    glBindTexture(GL_TEXTURE_2D, gl.spongebobTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w2, h2, 0,
+            GL_RGB, GL_UNSIGNED_BYTE, img[1].data); 
+
+    glBindTexture(GL_TEXTURE_2D, gl.nobleTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w3, h3, 0,
+            GL_RGB, GL_UNSIGNED_BYTE, img[2].data);
+
+    glBindTexture(GL_TEXTURE_2D, gl.tigerTexture);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w4, h4, 0,
+            GL_RGB, GL_UNSIGNED_BYTE, img[3].data);
+    
+    glBindTexture(GL_TEXTURE_2D, g.eagleSprite);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, w5, h5, 0,
+            GL_RGB, GL_UNSIGNED_BYTE, img[4].data);
+           
+    glBindTexture(GL_TEXTURE_2D, g.eagleNone);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    unsigned char* eagleData = buildAlphaData(&img[4]);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w5, h5, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, eagleData);
+    free(eagleData);
+    glBindTexture(GL_TEXTURE_2D, g.backgroundTexture);
+    unsigned char* backgroundData = buildAlphaData(&img[5]);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w6, h6, 0,
+            GL_RGBA, GL_UNSIGNED_BYTE, backgroundData);
 }
 
 void normalize2d(Vec v)
@@ -839,6 +895,46 @@ void physics()
             g.mouseThrustOn = false;
     }
 }
+//Juan Orozco
+
+void showEagle()
+{
+	glColor3ub(255,255,255);
+
+	int wid =80;
+	glPushMatrix();
+	glTranslatef(g.ship.pos[0], g.ship.pos[1], 0);
+	glBindTexture(GL_TEXTURE_2D, g.eagleNone);
+	glEnable(GL_ALPHA_TEST);
+	glAlphaFunc(GL_GREATER, 0.0f);
+	glColor4ub(255,255,255,255);
+
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+	
+	glEnd();
+	glPopMatrix();
+}
+void showBackground()
+{
+	glColor3ub(255,255,255);
+
+	int back = gl.xres-250;
+	glPushMatrix();
+	glTranslatef(255, 255, 0);
+	glBindTexture(GL_TEXTURE_2D, g.backgroundTexture);
+	glBegin(GL_QUADS);
+	glTexCoord2f(0.0f, 1.0f); glVertex2i(-back,-back);
+	glTexCoord2f(0.0f, 0.0f); glVertex2i(-back, back);
+	glTexCoord2f(1.0f, 0.0f); glVertex2i( back, back);
+	glTexCoord2f(1.0f, 1.0f); glVertex2i( back,-back);
+	
+	glEnd();
+	glPopMatrix();
+}
 
 void show_credits() 
 {	
@@ -867,24 +963,31 @@ void show_credits()
     showAndresPic(400, gl.yres-450, gl.tigerTexture);
 
 }
+extern int getScore();
+extern int timeTotal(struct timespec*);
 void render()
 {
+    timeTotal(&g.gTime);
     Rect r;
     glClear(GL_COLOR_BUFFER_BIT);
     if (gl.credits) {
         show_credits(); 
         return;
     }
-    r.bot = gl.yres - 20;
+	r.bot = gl.yres - 20;
     r.left = 10;
     r.center = 0;
+        showBackground();
+	showEagle();
     ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
     ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
     ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
     ggprint8b(&r, 16, 0x00ffff00, "n asteroids destroyed: ");
+    ggprint8b(&r, 16, 0x00ffff00, "Score: %d", getScore());
+
     //-------------
     //Draw the ship
-    glColor3fv(g.ship.color);
+    /*glColor3fv(g.ship.color);
     glPushMatrix();
     glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
     glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
@@ -921,7 +1024,7 @@ void render()
             glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
         }
         glEnd();
-    }
+    }*/
     //------------------
     //Draw the asteroids
     {
