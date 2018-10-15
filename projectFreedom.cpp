@@ -115,7 +115,15 @@ Image img[6] = {
     "./images/Noblelogo.jpg",
     "./images/tiger.jpg",
     "./images/eagle.jpg",
-    "./images/Background.jpg"
+    "./images/city.jpg"
+};
+
+class Texture {
+    public:
+        Image *backImage;
+        GLuint backTexture;
+        float xc[2];
+        float yc[2];
 };
 
 class Global {
@@ -123,6 +131,7 @@ class Global {
         int xres, yres;
         char keys[65536];
         bool credits;
+        Texture tex;
         GLuint perfectTexture;
         GLuint nobleTexture;
         GLuint tigerTexture;
@@ -405,6 +414,15 @@ unsigned char* buildAlphaData(Image* img) {
 }
 void init_opengl()
 {
+    //background
+    gl.tex.backImage = &img[4];
+    //OpenGL initialization
+    glGenTextures(1, &gl.tex.backTexture);
+    glGenTextures(1, &gl.nobleTexture);
+    glGenTextures(1, &gl.perfectTexture);
+    glGenTextures(1, &gl.tigerTexture);
+    glGenTextures(1, &gl.spongebobTexture);
+
     glViewport(0, 0, gl.xres, gl.yres);
     //Initialize matrices
     glMatrixMode(GL_PROJECTION); glLoadIdentity();
@@ -429,7 +447,7 @@ void init_opengl()
     glGenTextures(1, &gl.spongebobTexture);
     glGenTextures(1, &g.eagleSprite);
     glGenTextures(1, &g.backgroundTexture);
-    
+
     //noble texture
     int w1, w2, w3, w4, w5, w6;
     int h1, h2, h3, h4, h5, h6;
@@ -446,13 +464,13 @@ void init_opengl()
     w6 = img[5].width;
     h6 = img[5].height;
 
-   
+
     glBindTexture(GL_TEXTURE_2D, gl.perfectTexture);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w1, h1, 0,
             GL_RGB, GL_UNSIGNED_BYTE, img[0].data);
-    
+
     glBindTexture(GL_TEXTURE_2D, gl.spongebobTexture);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -470,13 +488,13 @@ void init_opengl()
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w4, h4, 0,
             GL_RGB, GL_UNSIGNED_BYTE, img[3].data);
-    
+
     glBindTexture(GL_TEXTURE_2D, g.eagleSprite);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, 3, w5, h5, 0,
             GL_RGB, GL_UNSIGNED_BYTE, img[4].data);
-           
+
     glBindTexture(GL_TEXTURE_2D, g.eagleNone);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -484,12 +502,17 @@ void init_opengl()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w5, h5, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, eagleData);
     free(eagleData);
-    glBindTexture(GL_TEXTURE_2D, g.backgroundTexture);
+
+    glBindTexture(GL_TEXTURE_2D, gl.tex.backTexture);
     unsigned char* backgroundData = buildAlphaData(&img[5]);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w6, h6, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, backgroundData);
+    gl.tex.xc[0] = 0.0;
+    gl.tex.xc[1] = 0.25;
+    gl.tex.yc[0] = 0.0;
+    gl.tex.yc[1] = 1.0;
 }
 
 void normalize2d(Vec v)
@@ -556,45 +579,46 @@ void check_mouse(XEvent *e)
     }
     if (e->type == MotionNotify) {
         if (savex != e->xbutton.x || savey != e->xbutton.y) {
+            /*
             //Mouse moved
             int xdiff = savex - e->xbutton.x;
             int ydiff = savey - e->xbutton.y;
             if (++ct < 10)
-                return;		
+            return;		
             if (xdiff > 0) {
-                //mouse moved along the x-axis.
-                g.ship.angle += 0.05f * (float)xdiff;
-                if (g.ship.angle >= 360.0f)
-                    g.ship.angle -= 360.0f;
+            //mouse moved along the x-axis.
+            g.ship.angle += 0.05f * (float)xdiff;
+            if (g.ship.angle >= 360.0f)
+            g.ship.angle -= 360.0f;
             }
             else if (xdiff < 0) {
-                g.ship.angle += 0.05f * (float)xdiff;
-                if (g.ship.angle < 0.0f)
-                    g.ship.angle += 360.0f;
+            g.ship.angle += 0.05f * (float)xdiff;
+            if (g.ship.angle < 0.0f)
+            g.ship.angle += 360.0f;
             }
             if (ydiff > 0) {
-                //mouse moved along the y-axis.
-                //apply thrust
-                //convert ship angle to radians
-                Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
-                //convert angle to a vector
-                Flt xdir = cos(rad);
-                Flt ydir = sin(rad);
-                g.ship.vel[0] += xdir * (float)ydiff * 0.001f;
-                g.ship.vel[1] += ydir * (float)ydiff * 0.001f;
-                Flt speed = sqrt(g.ship.vel[0]*g.ship.vel[0]+
-                        g.ship.vel[1]*g.ship.vel[1]);
-                if (speed > 15.0f) {
-                    speed = 15.0f;
-                    normalize2d(g.ship.vel);
-                    g.ship.vel[0] *= speed;
-                    g.ship.vel[1] *= speed;
-                }
-                g.mouseThrustOn = true;
-                clock_gettime(CLOCK_REALTIME, &g.mouseThrustTimer);
+            //mouse moved along the y-axis.
+            //apply thrust
+            //convert ship angle to radians
+            Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+            //convert angle to a vector
+            Flt xdir = cos(rad);
+            Flt ydir = sin(rad);
+            g.ship.vel[0] += xdir * (float)ydiff * 0.001f;
+            g.ship.vel[1] += ydir * (float)ydiff * 0.001f;
+            Flt speed = sqrt(g.ship.vel[0]*g.ship.vel[0]+
+            g.ship.vel[1]*g.ship.vel[1]);
+            if (speed > 15.0f) {
+            speed = 15.0f;
+            normalize2d(g.ship.vel);
+            g.ship.vel[0] *= speed;
+            g.ship.vel[1] *= speed;
+            }
+            g.mouseThrustOn = true;
+            clock_gettime(CLOCK_REALTIME, &g.mouseThrustTimer);
             }
             x11.set_mouse_position(100, 100);
-            savex = savey = 100;
+            savex = savey = 100;*/
         }
     }
 }
@@ -693,6 +717,11 @@ void buildAsteroidFragment(Asteroid *ta, Asteroid *a)
 
 void physics()
 {
+
+    gl.tex.xc[0] += 0.001;
+    gl.tex.xc[1] += 0.001;
+
+
     Flt d0,d1,dist;
     //Update ship position
     g.ship.pos[0] += g.ship.vel[0];
@@ -899,41 +928,41 @@ void physics()
 
 void showEagle()
 {
-	glColor3ub(255,255,255);
+    glColor3ub(255,255,255);
 
-	int wid =80;
-	glPushMatrix();
-	glTranslatef(g.ship.pos[0], g.ship.pos[1], 0);
-	glBindTexture(GL_TEXTURE_2D, g.eagleNone);
-	glEnable(GL_ALPHA_TEST);
-	glAlphaFunc(GL_GREATER, 0.0f);
-	glColor4ub(255,255,255,255);
+    int wid =80;
+    glPushMatrix();
+    glTranslatef(g.ship.pos[0], g.ship.pos[1], 0);
+    glBindTexture(GL_TEXTURE_2D, g.eagleNone);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
 
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
-	
-	glEnd();
-	glPopMatrix();
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+
+    glEnd();
+    glPopMatrix();
 }
 void showBackground()
 {
-	glColor3ub(255,255,255);
+    glColor3ub(255,255,255);
 
-	int back = gl.xres-250;
-	glPushMatrix();
-	glTranslatef(255, 255, 0);
-	glBindTexture(GL_TEXTURE_2D, g.backgroundTexture);
-	glBegin(GL_QUADS);
-	glTexCoord2f(0.0f, 1.0f); glVertex2i(-back,-back);
-	glTexCoord2f(0.0f, 0.0f); glVertex2i(-back, back);
-	glTexCoord2f(1.0f, 0.0f); glVertex2i( back, back);
-	glTexCoord2f(1.0f, 1.0f); glVertex2i( back,-back);
-	
-	glEnd();
-	glPopMatrix();
+    int back = gl.xres-250;
+    glPushMatrix();
+    glTranslatef(255, 255, 0);
+    glBindTexture(GL_TEXTURE_2D, g.backgroundTexture);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-back,-back);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-back, back);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( back, back);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( back,-back);
+
+    glEnd();
+    glPopMatrix();
 }
 
 void show_credits() 
@@ -967,6 +996,9 @@ extern int getScore();
 extern int timeTotal(struct timespec*);
 void render()
 {
+
+
+
     timeTotal(&g.gTime);
     Rect r;
     glClear(GL_COLOR_BUFFER_BIT);
@@ -974,11 +1006,21 @@ void render()
         show_credits(); 
         return;
     }
-	r.bot = gl.yres - 20;
+    r.bot = gl.yres - 20;
     r.left = 10;
     r.center = 0;
-        showBackground();
-	showEagle();
+    showBackground();
+
+    glClear(GL_COLOR_BUFFER_BIT);
+    glColor3f(1.0, 1.0, 1.0);
+    glBindTexture(GL_TEXTURE_2D, gl.tex.backTexture);
+    glBegin(GL_QUADS);
+    glTexCoord2f(gl.tex.xc[0], gl.tex.yc[1]); glVertex2i(0, 0);
+    glTexCoord2f(gl.tex.xc[0], gl.tex.yc[0]); glVertex2i(0, gl.yres);
+    glTexCoord2f(gl.tex.xc[1], gl.tex.yc[0]); glVertex2i(gl.xres, gl.yres);
+    glTexCoord2f(gl.tex.xc[1], gl.tex.yc[1]); glVertex2i(gl.xres, 0);
+    glEnd();
+    showEagle();
     ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
     ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
     ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
@@ -988,42 +1030,42 @@ void render()
     //-------------
     //Draw the ship
     /*glColor3fv(g.ship.color);
-    glPushMatrix();
-    glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
-    glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
-    glBegin(GL_TRIANGLES);
-    glVertex2f(-12.0f, -10.0f);
-    glVertex2f(  0.0f, 20.0f);
-    glVertex2f(  0.0f, -6.0f);
-    glVertex2f(  0.0f, -6.0f);
-    glVertex2f(  0.0f, 20.0f);
-    glVertex2f( 12.0f, -10.0f);
+      glPushMatrix();
+      glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
+      glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
+      glBegin(GL_TRIANGLES);
+      glVertex2f(-12.0f, -10.0f);
+      glVertex2f(  0.0f, 20.0f);
+      glVertex2f(  0.0f, -6.0f);
+      glVertex2f(  0.0f, -6.0f);
+      glVertex2f(  0.0f, 20.0f);
+      glVertex2f( 12.0f, -10.0f);
+      glEnd();
+      glColor3f(1.0f, 0.0f, 0.0f);
+      glBegin(GL_POINTS);
+      glVertex2f(0.0f, 0.0f);
+      glEnd();
+      glPopMatrix();
+      if (gl.keys[XK_Up] || g.mouseThrustOn) {
+      int i;
+    //draw thrust
+    Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+    //convert angle to a vector
+    Flt xdir = cos(rad);
+    Flt ydir = sin(rad);
+    Flt xs,ys,xe,ye,r;
+    glBegin(GL_LINES);
+    for (i=0; i<16; i++) {
+    xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
+    ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
+    r = rnd()*40.0+40.0;
+    xe = -xdir * r + rnd() * 18.0 - 9.0;
+    ye = -ydir * r + rnd() * 18.0 - 9.0;
+    glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
+    glVertex2f(g.ship.pos[0]+xs,g.ship.pos[1]+ys);
+    glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
+    }
     glEnd();
-    glColor3f(1.0f, 0.0f, 0.0f);
-    glBegin(GL_POINTS);
-    glVertex2f(0.0f, 0.0f);
-    glEnd();
-    glPopMatrix();
-    if (gl.keys[XK_Up] || g.mouseThrustOn) {
-        int i;
-        //draw thrust
-        Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
-        //convert angle to a vector
-        Flt xdir = cos(rad);
-        Flt ydir = sin(rad);
-        Flt xs,ys,xe,ye,r;
-        glBegin(GL_LINES);
-        for (i=0; i<16; i++) {
-            xs = -xdir * 11.0f + rnd() * 4.0 - 2.0;
-            ys = -ydir * 11.0f + rnd() * 4.0 - 2.0;
-            r = rnd()*40.0+40.0;
-            xe = -xdir * r + rnd() * 18.0 - 9.0;
-            ye = -ydir * r + rnd() * 18.0 - 9.0;
-            glColor3f(rnd()*.3+.7, rnd()*.3+.7, 0);
-            glVertex2f(g.ship.pos[0]+xs,g.ship.pos[1]+ys);
-            glVertex2f(g.ship.pos[0]+xe,g.ship.pos[1]+ye);
-        }
-        glEnd();
     }*/
     //------------------
     //Draw the asteroids
