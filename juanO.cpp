@@ -45,3 +45,45 @@ void JuanPicture(int x, int y, GLuint texid)
     glPopMatrix();
 
 }
+//Juan Orozco
+void showEagle(float x, float y, GLuint g)
+{    //output eagle
+    glColor3ub(255,255,255);
+
+    int wid=80;
+    glPushMatrix();
+    glTranslatef(x, y, 0);
+    glBindTexture(GL_TEXTURE_2D, g);
+    glEnable(GL_ALPHA_TEST);
+    glAlphaFunc(GL_GREATER, 0.0f);
+    glColor4ub(255,255,255,255);
+
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+
+    glEnd();
+    glPopMatrix();
+}
+//Juan Orozco
+void showBackground(int x,GLuint g)
+{
+    glColor3ub(255,255,255);
+
+    int back = x -200 ;
+    glPushMatrix();
+    glTranslatef(255, 255, 0);
+    glBindTexture(GL_TEXTURE_2D, g);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-back,-back);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-back, back);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( back, back);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( back,-back);
+
+    glEnd();
+    glPopMatrix();
+    //----------------
+}
+
