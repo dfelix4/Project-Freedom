@@ -154,7 +154,7 @@ class Ship {
         Ship() {
             VecZero(dir);
             pos[0] = (Flt)(gl.xres/2);
-            pos[1] = (Flt)(gl.yres/2);
+            pos[1] = 525;
             pos[2] = 0.0f;
             VecZero(vel);
             angle = 0.0;
@@ -285,7 +285,7 @@ class X11_wrapper {
             set_title();
             glc = glXCreateContext(dpy, vi, NULL, GL_TRUE);
             glXMakeCurrent(dpy, win, glc);
-            show_mouse_cursor(0);
+            //show_mouse_cursor(0);
         }
         ~X11_wrapper() {
             XDestroyWindow(dpy, win);
@@ -507,7 +507,7 @@ void init_opengl()
     unsigned char* backgroundData = buildAlphaData(&img[5]);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w6, h6, 0,
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w6, h6-50, 0,
             GL_RGBA, GL_UNSIGNED_BYTE, backgroundData);
     gl.tex.xc[0] = 0.0;
     gl.tex.xc[1] = 0.25;
@@ -653,7 +653,29 @@ int check_keys(XEvent *e)
             break;
         case XK_s:
             break;
+        case XK_Up:
+            if (g.ship.pos[1] == 725) {
+                g.ship.pos[1] = 125;
+            } else {
+                g.ship.pos[1] += 200;
+            }
+            break;
         case XK_Down:
+            if (g.ship.pos[1] == 125) {
+                g.ship.pos[1] = 725;
+            } else {
+                g.ship.pos[1] -= 200;
+            }
+            break;
+        case XK_Left:
+            if (g.ship.pos[0] > 10) {
+                g.ship.pos[0] -= 10;
+            }
+            break;
+        case XK_Right:
+            if (g.ship.pos[0] < 1190) {
+                g.ship.pos[0] += 10;
+            }
             break;
         case XK_equal:
             break;
@@ -724,8 +746,8 @@ void physics()
 
     Flt d0,d1,dist;
     //Update ship position
-    g.ship.pos[0] += g.ship.vel[0];
-    g.ship.pos[1] += g.ship.vel[1];
+    //g.ship.pos[0] += g.ship.vel[0];
+    //g.ship.pos[1] += g.ship.vel[1];
     //Check for collision with window edges
     if (g.ship.pos[0] < 0.0) {
         g.ship.pos[0] += (float)gl.xres;
@@ -926,45 +948,6 @@ void physics()
 }
 //Juan Orozco
 
-void showEagle()
-{
-    glColor3ub(255,255,255);
-
-    int wid =80;
-    glPushMatrix();
-    glTranslatef(g.ship.pos[0], g.ship.pos[1], 0);
-    glBindTexture(GL_TEXTURE_2D, g.eagleNone);
-    glEnable(GL_ALPHA_TEST);
-    glAlphaFunc(GL_GREATER, 0.0f);
-    glColor4ub(255,255,255,255);
-
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
-
-    glEnd();
-    glPopMatrix();
-}
-void showBackground()
-{
-    glColor3ub(255,255,255);
-
-    int back = gl.xres-250;
-    glPushMatrix();
-    glTranslatef(255, 255, 0);
-    glBindTexture(GL_TEXTURE_2D, g.backgroundTexture);
-    glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(-back,-back);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(-back, back);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i( back, back);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i( back,-back);
-
-    glEnd();
-    glPopMatrix();
-}
-
 void show_credits() 
 {	
     Rect r;
@@ -999,7 +982,9 @@ void render()
 
 
 
-    timeTotal(&g.gTime);
+    extern void showBackground(int ,GLuint);
+    extern void  showEagle(float, float, GLuint);
+ 
     Rect r;
     glClear(GL_COLOR_BUFFER_BIT);
     if (gl.credits) {
@@ -1009,8 +994,9 @@ void render()
     r.bot = gl.yres - 20;
     r.left = 10;
     r.center = 0;
-    showBackground();
+    //showBackground();
 
+    showBackground(gl.xres,gl.tex.backTexture);
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1.0, 1.0, 1.0);
     glBindTexture(GL_TEXTURE_2D, gl.tex.backTexture);
@@ -1020,7 +1006,8 @@ void render()
     glTexCoord2f(gl.tex.xc[1], gl.tex.yc[0]); glVertex2i(gl.xres, gl.yres);
     glTexCoord2f(gl.tex.xc[1], gl.tex.yc[1]); glVertex2i(gl.xres, 0);
     glEnd();
-    showEagle();
+    //showEagle();
+    showEagle(g.ship.pos[0], g.ship.pos[1], g.eagleNone);
     ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
     ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
     ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
@@ -1029,7 +1016,7 @@ void render()
 
     //-------------
     //Draw the ship
-    /*glColor3fv(g.ship.color);
+   /*glColor3fv(g.ship.color);
       glPushMatrix();
       glTranslatef(g.ship.pos[0], g.ship.pos[1], g.ship.pos[2]);
       glRotatef(g.ship.angle, 0.0f, 0.0f, 1.0f);
