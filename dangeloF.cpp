@@ -1,11 +1,10 @@
 //Author: D'Angelo Felix
-//Date: 9/26/18
+//Date: 10/20/18
 
 #include "fonts.h"
 #include <GL/glx.h>
-#include<iostream>
-#include<cmath>
-using namespace std;
+#include <cmath>
+
 void creditsD(int x, int y)
 {
     Rect r;
@@ -14,6 +13,7 @@ void creditsD(int x, int y)
     r.center = 0;
     ggprint16(&r, 16, 0x00ff0000, "D'Angelo Felix");
 }
+
 void showDPic(int x, int y, GLuint textid)
 {
     static float angle = 0.0f;
@@ -39,4 +39,18 @@ void showDPic(int x, int y, GLuint textid)
     glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
     glEnd();
     glPopMatrix();
+}
+
+void test() 
+{
+    printf("I'm right here!\n");
+}
+void fireball() 
+{
+}
+void deagle()
+{
+}
+void shottie () 
+{
 }
