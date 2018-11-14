@@ -44,7 +44,7 @@ void showDPic(int x, int y, GLuint textid)
 void test() 
 {
     printf("I'm right here!\n");
-}
+}/*
 void fireball() 
 {
 }
@@ -92,3 +92,4 @@ void deagle_impact()
 void shottie () 
 {
 }
+*/
