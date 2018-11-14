@@ -10,17 +10,24 @@
 //      Setup sound to be able to play sounds for hit, music, shoot and powerups
 //
 #include <ctgmath>
-#include <iostream> //Testing purposes
+#include <iostream> //For bug testing purposes
 #include <cmath> //Math functions
 #include <ctime> //For time calculations
 #include <unistd.h>
-#include <iostream>
 #include "fonts.h"
 #include <GL/glx.h>
+#include <fstream>
+#include <X11/keysym.h>
+#include <X11/Xlib.h>
+#include <GL/glx.h>
+
 using namespace std;
 extern double timeDiff(struct timespec *start, struct timespec *end);
 int score = 0;
-//Show Credits function - finished
+int scoreboard[11];
+ifstream fin;
+ofstream fout;
+//show credits function
 void creditJosh(int x, int y) 
 {
     Rect r;
@@ -29,20 +36,18 @@ void creditJosh(int x, int y)
     r.center = 0;
     ggprint16(&r, 16, 0x00ffff00, "\nThe Best Around - Joshua Rodriguez\n");
 }
+//Show credit picture and animate it
 void showJoshPicture(int x, int y, GLuint texid) 
 {
-    //Show credit picture and animate it
     static float direction = 0.0f;
     float fx = 0;
     direction +=0.1f;
     fx += sin(direction)*400.0f;
-
     glColor3ub(255,255,255);
     int wid = 40;
-    glPushMatrix();
 
+    glPushMatrix();
     glTranslatef(x+fx,y,0);
-    //show Noble team logo
     glBindTexture(GL_TEXTURE_2D, texid);
     glColor3ub(255,255,255);
     glBegin(GL_QUADS);
@@ -55,29 +60,149 @@ void showJoshPicture(int x, int y, GLuint texid)
 
     return;
 }
-//Setup score based on timer - Unfinished
+//Function to calculate current time to an int
+//Add timespec struct in global class and use
+//clock_gettime(CLOCK_REALTIME, &'structName')
+//to pass in for g_time
 int timeTotal(struct timespec* gTime) 
-{                       //Function to calculate current time to an int
-    //Add timespec struct in global class and use
-    //clock_gettime(CLOCK_REALTIME, &'structName')
-    //to pass in for g_time
+{  
     struct timespec rTime;
     clock_gettime(CLOCK_REALTIME, &rTime);
     double time = timeDiff(gTime, &rTime);
     int timeRound = round(time);
     return(timeRound);
 }
+//Add score over time + enemies defeated + any multipliers
 void scoreAccumulator(int multiplier, int kills, struct timespec* global) 
-{                       //Function to auto add score over time
+{   
     int scoreOvertime;
     scoreOvertime = timeTotal(global) + kills;
     score = scoreOvertime*multiplier;
     return;
-}               
+}
+//Getter function for score
 int getScore()
-    //Call anytime you need score 
-{               
+{                  
     return(score);
 }
+//Display scoreboard to screen
+void displayScoreboard(int x, int y, int o)
+{
+    Rect s;
+    s.bot = y;
+    s.left = x;
+    s.center = o;
+    fin.open("scoreBoard.txt");
+    if(fin.fail() ) {
+        cout << "Error: Cannot open/find scoreboard.txt for reading.\n";
+    }
+    for(int i = 0; i<10; i++) {
+        fin >> scoreboard[i];
+        ggprint16(&s, 16, 0x00ffff00, "\n%d. %d", i+1, scoreboard[i]);
+    }
+    fin.close();
+}
+//Bubble sort scoreboard
+void sortScoreboard() 
+{
+    int temp;
+    int first;
+    int second;
+    for (int i =9; i>=0; i--) {
+        first = scoreboard[i];
+        second = scoreboard[i+1];
+        if (first < second) {
+            temp = first;
+            first = second;
+            second = temp;
+            scoreboard[i] = first;
+            scoreboard[i+1] = second;
+        }
+    } 
+}
+//Update scoreboard with new value and file I/O to txt file
+void newScoreboard() 
+{
+    fin.open("scoreBoard.txt");
+    for (int i = 0; i<10; i++) {
+        fin >> scoreboard[i];
+    }
+    fin.close();
 
+    cout << "Making scoreboard\n";
+    scoreboard[10] = getScore();
+    sortScoreboard();
+    if (fin.fail() ) {
+        cout << "Error: Cannot read to file" << endl;
+    }
+    fout.open("scoreBoard.txt");
+    if (fout.fail() ) {
+        cout << "Error: cannot write to file\n";
+    }
+    for (int i=0; i<11; i++) {
+        fout << scoreboard[i] << endl;
+    }
+    fout.close();
+}
+void showMainMenu(int x, GLuint mainScreen, int y) {   
+    
+    glColor3ub(255,255,255);
+    glClear(GL_COLOR_BUFFER_BIT);
+    int back = x - 200;
+    glPushMatrix();
+    glTranslatef(255, 255, 0);
+    glBindTexture(GL_TEXTURE_2D, mainScreen);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(0,0);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(0, y);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i(x, y);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i(x, 0);
 
+    glEnd();
+    glPopMatrix();
+
+    Rect m;
+    m.bot = 200;
+    m.left = 200;
+    m.center = 0;
+    ggprint8b(&m, 16, 0x00ff0000, "THIS IS MAIN MENU PRESS ENTER TO START, C to get into credits");
+}
+void showGameOver(int x, GLuint screen) {
+    glColor3ub(255,255,255);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    int back = x -200 ;
+    glPushMatrix();
+    glTranslatef(255, 255, 0);
+    glBindTexture(GL_TEXTURE_2D, screen);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-back,-back);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-back, back);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( back, back);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( back,-back);
+
+    glEnd();
+    glPopMatrix();
+    Rect m;
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    glColor3ub(255, 0, 0);
+    m.bot = 0;
+    m.left = 200;
+    m.center = 0;
+    //glTexCoord2f(0.0f, 1.0f); 
+    glVertex2i(-200,-200);
+    //glTexCoord2f(0.0f, 0.0f); 
+    glVertex2i(-200, 200);
+    //glTexCoord2f(1.0f, 0.0f); 
+    glVertex2i( 200, 200);
+    //glTexCoord2f(1.0f, 1.0f); 
+    glVertex2i( 200,-200);
+    glEnd();
+    glPopMatrix();
+    ggprint8b(&m, 16, 0x00ff0000, "THIS IS Game Over screen");
+    displayScoreboard(m.left, m.bot, m.center);
+}
+void showPauseMenu() {
+    //To be done...
+}

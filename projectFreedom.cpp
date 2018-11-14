@@ -136,6 +136,7 @@ class Global {
         char keys[65536];
         //--------------------------------
         bool credits;
+        int menuState = 0;
         Texture tex;
         GLuint perfectTexture;
         GLuint nobleTexture;
@@ -203,7 +204,14 @@ class Asteroid {
             life = 5;
         }
 };
-
+class GameTime {
+    public: 
+        struct timespec rTime;
+    public:
+        GameTime() {
+            clock_gettime(CLOCK_REALTIME, &rTime);
+        }
+};
 //AZ
 
 /*
@@ -239,11 +247,13 @@ class Game {
         GLuint eagleSprite;
         GLuint eagleNone;
         GLuint backgroundTexture;
+        GameTime *runningTime;
         //--------------------------------
     public:
         Game() {
             clock_gettime(CLOCK_REALTIME, &gTime);
             ahead = NULL;
+            runningTime = new GameTime;
             barr = new Bullet[MAX_BULLETS];
             nasteroids = 0;
             nbullets = 0;
@@ -435,12 +445,52 @@ void check_mouse(XEvent *e);
 int check_keys(XEvent *e);
 void physics();
 void render();
+extern void newScoreboard();
+extern void showMainMenu(int, GLuint, int);
+extern void showGameOver(int, GLuint);
+extern void showPauseMenu();
+enum {
+    MAIN_MENU,
+    GAME_RUNNING,
+    GAME_OVER,
+    PAUSE_GAME,
+};
+void show_credits() 
+{
+    glClear(GL_COLOR_BUFFER_BIT);    
+    Rect r;
+    r.bot = gl.yres - 100;
+    r.left = 530;
+    r.center = 0;
+    ggprint16(&r, 16, 0x00ffffff, "Credits");
+
+    extern void creditsD(int x, int y);
+    creditsD(500,gl.yres-150);
+    extern void ShowCredits(int x, int y);
+    ShowCredits(500,gl.yres-250);
+    extern void creditJosh(int x, int y);
+    creditJosh(500,gl.yres-350);
+    extern void showAndresName(int x, int y);
+    showAndresName(500,gl.yres-450);
+
+    extern void showDPic(int, int, GLuint);
+    showDPic(400, gl.yres-150, gl.perfectTexture);
+    extern void JuanPicture(int, int, GLuint);
+    JuanPicture(400, gl.yres-250, gl.spongebobTexture);
+    extern void showJoshPicture(int, int, GLuint);
+    showJoshPicture(400, gl.yres-350, gl.nobleTexture);
+    extern void showAndresPic(int, int, GLuint);
+    showAndresPic(400, gl.yres-450, gl.tigerTexture);
+
+}
+
 
 //==========================================================================
 // M A I N
 //==========================================================================
 int main()
 {
+    int limitScoreboard = 0;
     logOpen();
     init_opengl();
     srand(time(NULL));
@@ -453,9 +503,38 @@ int main()
             check_mouse(&e);
             done = check_keys(&e);
         }
-        physics();
-        render();
-        x11.swapBuffers();
+        switch(gl.menuState) {
+            case MAIN_MENU:
+                showMainMenu(gl.xres, gl.tex.backTexture, gl.yres);
+                if (gl.credits) {
+                    show_credits();
+                }
+                x11.swapBuffers();
+                break;
+            case GAME_RUNNING: {
+                if (limitScoreboard==0) {
+                    GameTime *gt = g.runningTime;
+                    limitScoreboard++;
+                    clock_gettime(CLOCK_REALTIME, &gt->rTime);
+                    timeCopy(&g.gTime, &gt->rTime);
+                }
+                physics();
+                render();
+                x11.swapBuffers();
+                break;
+                            }
+            case GAME_OVER:
+                if (limitScoreboard) {
+                    newScoreboard();
+                    limitScoreboard--;
+                }
+                showGameOver(gl.xres, gl.tex.backTexture);
+                x11.swapBuffers();
+                break;
+            case PAUSE_GAME:
+                break;
+
+        }
     }
     cleanup_fonts();
     logClose();
@@ -730,11 +809,24 @@ int check_keys(XEvent *e)
         case XK_Escape:
             return 1;
         case XK_c:
+            if(gl.menuState == MAIN_MENU) {
             gl.credits ^= true;
+            }
             break;
         case XK_f:
+            gl.menuState = MAIN_MENU;
             break;
         case XK_s:
+            gl.menuState = GAME_OVER;
+            break;
+        case XK_p:
+            if (gl.menuState == GAME_RUNNING || gl.menuState == PAUSE_GAME) {
+                if (gl.menuState == GAME_RUNNING) {
+                    gl.menuState = PAUSE_GAME;
+                } else {
+                    gl.menuState = GAME_RUNNING;
+                }
+            } else { break; }
             break;
         //-------------DF--------------moving the eagle around-------
         case XK_Up:
@@ -760,6 +852,10 @@ int check_keys(XEvent *e)
             if (g.ship.pos[0] < 1190) {
                 g.ship.pos[0] += 10;
             }
+            break;
+        case XK_Return:
+            if (gl.menuState == MAIN_MENU) 
+                gl.menuState = GAME_RUNNING;
             break;
         case XK_equal:
             break;
@@ -1038,51 +1134,23 @@ void physics()
 }
 //Juan Orozco???
 
-void show_credits() 
-{	
-    Rect r;
-    r.bot = gl.yres - 100;
-    r.left = 530;
-    r.center = 0;
-    ggprint16(&r, 16, 0x00ffffff, "Credits");
-
-    extern void creditsD(int x, int y);
-    creditsD(500,gl.yres-150);
-    extern void ShowCredits(int x, int y);
-    ShowCredits(500,gl.yres-250);
-    extern void creditJosh(int x, int y);
-    creditJosh(500,gl.yres-350);
-    extern void showAndresName(int x, int y);
-    showAndresName(500,gl.yres-450);
-
-    extern void showDPic(int, int, GLuint);
-    showDPic(400, gl.yres-150, gl.perfectTexture);
-    extern void JuanPicture(int, int, GLuint);
-    JuanPicture(400, gl.yres-250, gl.spongebobTexture);
-    extern void showJoshPicture(int, int, GLuint);
-    showJoshPicture(400, gl.yres-350, gl.nobleTexture);
-    extern void showAndresPic(int, int, GLuint);
-    showAndresPic(400, gl.yres-450, gl.tigerTexture);
-
-}
-
 extern int getScore();
 extern int timeTotal(struct timespec*);
-
+extern void scoreAccumulator(int, int, struct timespec*);
 void render()
 {
     extern void showBackground(int ,GLuint);
     extern void showEagle(float, float, GLuint);
     //extern void showEnemy();
-
+    scoreAccumulator(1, 0, &g.gTime);
     Rect r;
     glClear(GL_COLOR_BUFFER_BIT);
     //
     //--------Group
-    if (gl.credits) {
+    /*if (gl.credits) {
         show_credits(); 
         return;
-    }
+    }*/
     r.bot = gl.yres - 20;
     r.left = 10;
     r.center = 0;
