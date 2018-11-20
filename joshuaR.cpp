@@ -1,12 +1,13 @@
 //Author: Joshua Rodriguez
 //Date: 9-26-18
 // To do list:
-//      DONE-ish: Setup in game score based on time survived + enemies killed
+//      DONE-ish Setup in game score based on time survived + enemies killed
 //                          - Use existing time from asteroids
-//      Setup File I/O to save and read high scores to screen
+//      DONE: Setup File I/O to save and read high scores to screen
 //                          - Display 10 scores
 //                          - If new score > old score, delete 10th score
 //                          - Sorting algorithm
+//      Pause Menu: Working on it!
 //      Setup sound to be able to play sounds for hit, music, shoot and powerups
 //
 #include <ctgmath>
@@ -19,12 +20,24 @@
 #include <fstream>
 #include <X11/keysym.h>
 #include <X11/Xlib.h>
+//#include <log.h>
 #include <GL/glx.h>
 
+class Gametime {
+    public:
+        Gametime *nt;
+        struct timespec newT;
+        Gametime() {
+            clock_gettime(CLOCK_REALTIME, &newT);
+        }
+};
 using namespace std;
+extern void timeCopy(struct timespec *dest, struct timespec *source);
 extern double timeDiff(struct timespec *start, struct timespec *end);
 int score = 0;
 int scoreboard[11];
+int passedTime = 0;
+int oldTime = 0;
 ifstream fin;
 ofstream fout;
 //show credits function
@@ -64,6 +77,15 @@ void showJoshPicture(int x, int y, GLuint texid)
 //Add timespec struct in global class and use
 //clock_gettime(CLOCK_REALTIME, &'structName')
 //to pass in for g_time
+void newTime(struct timespec oldtime) {
+    Gametime *t = new Gametime;
+    timeCopy(&oldtime, &t->newT);
+}
+void runningTime(struct timespec oldtime) {
+    Gametime *t = new Gametime;
+    oldTime = timeDiff(&oldtime, &t->newT);
+    timeCopy(&oldtime, &t->newT);
+}
 int timeTotal(struct timespec* gTime) 
 {  
     struct timespec rTime;
@@ -76,14 +98,21 @@ int timeTotal(struct timespec* gTime)
 void scoreAccumulator(int multiplier, int kills, struct timespec* global) 
 {   
     int scoreOvertime;
-    scoreOvertime = timeTotal(global) + kills;
+    scoreOvertime = timeTotal(global) + kills - oldTime;
     score = scoreOvertime*multiplier;
+    cout << "Pause: " << passedTime << " time total: " << timeTotal(global) << endl;
+    //oldTime = 0;
     return;
 }
 //Getter function for score
 int getScore()
 {                  
     return(score);
+}
+void addPauseTime(struct timespec* pause) {
+    struct timespec pTime;
+    clock_gettime(CLOCK_REALTIME, &pTime);
+    passedTime = (int)timeDiff(pause, &pTime) +1;
 }
 //Display scoreboard to screen
 void displayScoreboard(int x, int y, int o)
@@ -148,7 +177,7 @@ void showMainMenu(int x, GLuint mainScreen, int y) {
     
     glColor3ub(255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
-    int back = x - 200;
+    //int back = x - 200;
     glPushMatrix();
     glTranslatef(255, 255, 0);
     glBindTexture(GL_TEXTURE_2D, mainScreen);
@@ -187,17 +216,17 @@ void showGameOver(int x, GLuint screen) {
     glPushMatrix();
     glBegin(GL_QUADS);
     glColor3ub(255, 0, 0);
-    m.bot = 0;
+    m.bot = 600;
     m.left = 200;
     m.center = 0;
     //glTexCoord2f(0.0f, 1.0f); 
-    glVertex2i(-200,-200);
+    glVertex2i(200,-700);
     //glTexCoord2f(0.0f, 0.0f); 
-    glVertex2i(-200, 200);
+    glVertex2i(200, 700);
     //glTexCoord2f(1.0f, 0.0f); 
-    glVertex2i( 200, 200);
+    glVertex2i( 400, 700);
     //glTexCoord2f(1.0f, 1.0f); 
-    glVertex2i( 200,-200);
+    glVertex2i( 400,-400);
     glEnd();
     glPopMatrix();
     ggprint8b(&m, 16, 0x00ff0000, "THIS IS Game Over screen");
