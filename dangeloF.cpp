@@ -166,7 +166,7 @@ class Bullet {
         int rate;
     public:
         Bullet() {
-       rate = 0; 
+            rate = 0; 
         }
 };
 
@@ -181,7 +181,7 @@ class Asteroid {
         float angle;
         float rotate;
         //float color[3];
-        
+
         int life;        
         float width, height;
         Vec pos;
@@ -202,7 +202,7 @@ class Game {
         Ship ship;
         Asteroid *ahead;
         Bullet *barr;
-		//Shape *box;
+        //Shape *box;
         int nasteroids;
         int nbullets;
         struct timespec bulletTimer;
@@ -227,11 +227,11 @@ class Game {
             nbullets = 0;
             mouseThrustOn = false;
             //build 10 asteroids...
-			int piece = 0;
+            int piece = 0;
             for (int j=0; j<10; j++) {
-				Asteroid *a = new Asteroid;
-				//a->width = 100;
-				//a->height = 100;
+                Asteroid *a = new Asteroid;
+                //a->width = 100;
+                //a->height = 100;
                 a->nverts = 8;
                 a->radius = 100;
                 Flt r2 = a->radius / 2.0;
@@ -242,15 +242,15 @@ class Game {
                     a->vert[i][1] = cos(angle) * (r2 + rnd() * a->radius);
                     angle += inc;
                 }
-				//a->pos[0] = (Flt)(rand() % gd.xres);
-				//a->pos[1] = (Flt)(rand() % gd.xres);
-				int position = piece % 4;
-				//a->pos[0] = (Flt)(910 + 5 * 65);
-				a->pos[0] = (Flt)(gd.xres + 500);
-				a->pos[1] = (Flt)(position*250);
-				piece++;
-				//a->pos[1] = (Flt)(900 - 5*60);
-				a->pos[2] = 0.0f;
+                //a->pos[0] = (Flt)(rand() % gd.xres);
+                //a->pos[1] = (Flt)(rand() % gd.xres);
+                int position = piece % 4;
+                //a->pos[0] = (Flt)(910 + 5 * 65);
+                a->pos[0] = (Flt)(gd.xres + 500);
+                a->pos[1] = (Flt)(position*250);
+                piece++;
+                //a->pos[1] = (Flt)(900 - 5*60);
+                a->pos[2] = 0.0f;
                 a->angle = 0.0;
                 a->rotate = rnd() * 4.0 - 2.0;
                 a->color[0] = 0.8;
@@ -262,33 +262,33 @@ class Game {
                 if (ahead != NULL)
                     ahead->prev = a;
                 ahead = a;
-				++nasteroids;
-				/*Asteroid *a = new Asteroid;
-                a->nverts = 8;
-                a->radius = rnd()*80.0 + 40.0;
-                Flt r2 = a->radius / 2.0;
-                Flt angle = 0.0f;
-                Flt inc = (PI * 2.0) / (Flt)a->nverts;
-                for (int i=0; i<a->nverts; i++) {
-                    a->vert[i][0] = sin(angle) * (r2 + rnd() * a->radius);
-                    a->vert[i][1] = cos(angle) * (r2 + rnd() * a->radius);
-                    angle += inc;
-                }
-                a->pos[0] = (Flt)(rand() % gd.xres);
-                a->pos[1] = (Flt)(rand() % gd.yres);
-                a->pos[2] = 0.0f;
-                a->angle = 0.0;
-                a->rotate = rnd() * 4.0 - 2.0;
-                a->color[0] = 0.8;
-                a->color[1] = 0.8;
-                a->color[2] = 0.7;
-                a->vel[0] = (Flt)(rnd()*2.0-1.0);
-                a->vel[1] = (Flt)(rnd()*2.0-1.0);
+                ++nasteroids;
+                /*Asteroid *a = new Asteroid;
+                  a->nverts = 8;
+                  a->radius = rnd()*80.0 + 40.0;
+                  Flt r2 = a->radius / 2.0;
+                  Flt angle = 0.0f;
+                  Flt inc = (PI * 2.0) / (Flt)a->nverts;
+                  for (int i=0; i<a->nverts; i++) {
+                  a->vert[i][0] = sin(angle) * (r2 + rnd() * a->radius);
+                  a->vert[i][1] = cos(angle) * (r2 + rnd() * a->radius);
+                  angle += inc;
+                  }
+                  a->pos[0] = (Flt)(rand() % gd.xres);
+                  a->pos[1] = (Flt)(rand() % gd.yres);
+                  a->pos[2] = 0.0f;
+                  a->angle = 0.0;
+                  a->rotate = rnd() * 4.0 - 2.0;
+                  a->color[0] = 0.8;
+                  a->color[1] = 0.8;
+                  a->color[2] = 0.7;
+                  a->vel[0] = (Flt)(rnd()*2.0-1.0);
+                  a->vel[1] = (Flt)(rnd()*2.0-1.0);
                 //std::cout << "asteroid" << std::endl;
                 //add to front of linked list
                 a->next = ahead;
                 if (ahead != NULL)
-                    ahead->prev = a;
+                ahead->prev = a;
                 ahead = a;
                 ++nasteroids;*/
             }
@@ -340,31 +340,25 @@ void test()
     printf("I'm right here!\n");
 }
 /*void fireball() 
-{
-}*/
+  {
+  }*/
 void deagle_time(Game &g)
 {
-    printf("-1\n");
     //a little time between each bullet
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
-    printf("0\n");
     double ts = timeDiff(&g.bulletTimer, &bt);
-    if (ts > 0.5) {
+    if (ts > 0.8) {
         timeCopy(&g.bulletTimer, &bt);
-        printf("\n1");
         if (g.nbullets < MAX_BULLETS) {
             //shoot a bullet...
             //Bullet *b = new Bullet;
-        printf("2");
             Bullet *b = &g.barr[g.nbullets];
-        printf("3");
             timeCopy(&b->time, &bt);
             b->pos[0] = g.ship.pos[0];
             b->pos[1] = g.ship.pos[1];
             b->vel[0] = g.ship.vel[0];
             b->vel[1] = g.ship.vel[1];
-        printf("4");
             //convert ship angle to radians
             Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
             //convert angle to a vector
@@ -374,24 +368,54 @@ void deagle_time(Game &g)
             b->pos[1] += ydir*20.0f;
             b->vel[0] += xdir*6.0f + rnd()*0.1;
             b->vel[1] += ydir*6.0f + rnd()*0.1;
-        printf("5");
             b->color[0] = 1.0f;
             b->color[1] = 1.0f;
             b->color[2] = 1.0f;
-        printf("6");
             g.nbullets++;
-        printf("7\n");
         }
     }
-}/*
-void deagde_speed() 
-{
 }
-void deagde_impact() 
+void deagle_speed(Game &g) 
 {
-    memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
-    g.nbullets--;
+    while (i < g.nbullets) {
+        Bullet *b = &g.barr[i];
+        //How long has bullet been alive?
+        double ts = timeDiff(&b->time, &bt);
+        if (ts > 2.5) {
+            //time to delete the bullet.
+            memcpy(&g.barr[i], &g.barr[g.nbullets-1],
+                    sizeof(Bullet));
+            g.nbullets--;
+            //do not increment i.
+            continue;
+        }
+        //move the bullet
+        b->pos[0] += b->vel[0]+5;
+        b->pos[1] += b->vel[1]+5;
+        //Check for collision with window edges
+        if (b->pos[0] < 0.0) {
+            b->pos[0] += (float)gl.xres;
+        }
+        else if (b->pos[0] > (float)gl.xres) {
+            b->pos[0] -= (float)gl.xres;
+        }
+        else if (b->pos[1] < 0.0) {
+            b->pos[1] += (float)gl.yres;
+        }
+        else if (b->pos[1] > (float)gl.yres) {
+            b->pos[1] -= (float)gl.yres;
+        }
+        i++;
+    }
+} else {
+
 }
-void shottie () 
-{
-}*/
+/*
+   void deagde_impact() 
+   {
+   memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+   g.nbullets--;
+   }
+   void shottie () 
+   {
+   }*/
