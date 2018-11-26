@@ -348,7 +348,7 @@ void deagle_time(Game &g)
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
     double ts = timeDiff(&g.bulletTimer, &bt);
-    if (ts > 0.8) {
+    if (ts > 1.0) {
         timeCopy(&g.bulletTimer, &bt);
         if (g.nbullets < MAX_BULLETS) {
             //shoot a bullet...
@@ -366,8 +366,8 @@ void deagle_time(Game &g)
             Flt ydir = sin(rad);
             b->pos[0] += xdir*20.0f;
             b->pos[1] += ydir*20.0f;
-            b->vel[0] += xdir*6.0f + rnd()*0.1;
-            b->vel[1] += ydir*6.0f + rnd()*0.1;
+            b->vel[0] += xdir*15.0f + rnd()*0.8;
+            b->vel[1] += ydir*15.0f + rnd()*0.8;
             b->color[0] = 1.0f;
             b->color[1] = 1.0f;
             b->color[2] = 1.0f;
@@ -375,8 +375,11 @@ void deagle_time(Game &g)
         }
     }
 }
-void deagle_speed(Game &g) 
+void deagle_speed(Game &g, Global &gl) 
 {
+    struct timespec bt;
+    clock_gettime(CLOCK_REALTIME, &bt);
+    int i=0;
     while (i < g.nbullets) {
         Bullet *b = &g.barr[i];
         //How long has bullet been alive?
@@ -390,8 +393,8 @@ void deagle_speed(Game &g)
             continue;
         }
         //move the bullet
-        b->pos[0] += b->vel[0]+5;
-        b->pos[1] += b->vel[1]+5;
+        b->pos[0] += b->vel[0]+10;
+        b->pos[1] += b->vel[1]+10;
         //Check for collision with window edges
         if (b->pos[0] < 0.0) {
             b->pos[0] += (float)gl.xres;
@@ -407,7 +410,6 @@ void deagle_speed(Game &g)
         }
         i++;
     }
-} else {
 
 }
 /*
