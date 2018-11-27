@@ -359,70 +359,53 @@ void showEnemy(Game &g)
 {
     //------------------
     //Draw the asteroids
-        Asteroid *a = g.ahead;
-            //showEnemy(g.eagleNone, );
-        while (a) {
-            //showEnemy(g.eagleNone, Vec, Vec, Vec, float);
-            
-            /*
-            //Log("draw asteroid...\n");
-            glColor3fv(a->color);
-            glPushMatrix();
-            glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
-            glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
-            glBegin(GL_LINE_LOOP);
-            //Log("%i verts\n",a->nverts);
-            for (int j=0; j<a->nverts; j++) {
-                glVertex2f(a->vert[j][0], a->vert[j][1]);
-            }
-            glEnd();
-            glPopMatrix();
-            glColor3f(1.0f, 0.0f, 0.0f);
-            glBegin(GL_POINTS);
-            glVertex2f(a->pos[0], a->pos[1]);
-            glEnd();
-            a = a->next;
-            */
-            glPushMatrix();
-            glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
-            glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
-            for (int i = 0; i < 10; i++) {
-            int random = 0;
-            int num = random %2;
-            if (num == 0)
-                glBindTexture(GL_TEXTURE_2D, g.eagleNone);
-            else if (num == 1)
-                glBindTexture(GL_TEXTURE_2D, g.eagleSprite);
-            random++;
-            }
-            //glBindTexture(GL_TEXTURE_2D, g.eagleNone);
-            glEnable(GL_ALPHA_TEST);
-            glAlphaFunc(GL_GREATER, 0.0f);
-            glColor4ub(255,255,255,255);
-            glBegin(GL_QUADS);
-            //for (int j=0; j<a->nverts; j++) {
-            //    glVertex2f(a->vert[j][0], a->vert[j][1]);
-            //}
-            glTexCoord2f( 0.0f, 1.0f); 
-            glVertex2i(   -80,  -80);
-            glTexCoord2f( 0.0f, 0.0f); 
-            glVertex2i(   -80,  80);
-            glTexCoord2f( 1.0f, 0.0f); 
-            glVertex2i(   80,   80);
-            glTexCoord2f( 1.0f, 1.0f); 
-            glVertex2i(   80,   -80);
-            glEnd();
-            glPopMatrix();
-            //
-            //
-            glPushMatrix();
-            glColor3f(1.0f, 0.0f, 0.0f);
-            glBegin(GL_POINTS);
-            glVertex2f(a->pos[0], a->pos[1]);
-            glEnd();
-            glPopMatrix();
-            //
-            a = a->next;
-        }
-}
+    Asteroid *a = g.ahead;
+    while (a) {
+        //showEnemy();
 
+        /*
+        //Log("draw asteroid...\n");
+        glColor3fv(a->color);
+        glPushMatrix();
+        glTranslatef(a->pos[0], a->pos[1], a->pos[2]);
+        glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
+        glBegin(GL_LINE_LOOP);
+        //Log("%i verts\n",a->nverts);
+        for (int j=0; j<a->nverts; j++) {
+        glVertex2f(a->vert[j][0], a->vert[j][1]);
+        }
+        glEnd();
+        glPopMatrix();
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glBegin(GL_POINTS);
+        glVertex2f(a->pos[0], a->pos[1]);
+        glEnd();
+        a = a->next;
+        */
+        int wid = 80;
+        glPushMatrix();
+        glTranslatef(a->pos[0] , a->pos[1] , a->pos[2]);
+        glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
+        glBindTexture(GL_TEXTURE_2D, g.enemyNone);
+        glEnable(GL_ALPHA_TEST);
+        glAlphaFunc(GL_GREATER, 0.0f);
+        glColor4ub(255,255,255,255);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0.0f, 1.0f); glVertex2i(-wid,-wid);
+        glTexCoord2f(0.0f, 0.0f); glVertex2i(-wid, wid);
+        glTexCoord2f(1.0f, 0.0f); glVertex2i( wid, wid);
+        glTexCoord2f(1.0f, 1.0f); glVertex2i( wid,-wid);
+
+        glEnd();
+        glPopMatrix();
+        //
+        //
+        glPushMatrix();
+        glColor3f(1.0f, 0.0f, 0.0f);
+        glBegin(GL_POINTS);
+        glVertex2f(a->pos[0], a->pos[1]);
+        glEnd();
+        glPopMatrix();
+        a = a->next;
+    }
+}
