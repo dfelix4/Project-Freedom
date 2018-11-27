@@ -386,7 +386,7 @@ void showEnemy(Game &g)
         glPushMatrix();
         glTranslatef(a->pos[0] , a->pos[1] , a->pos[2]);
         glRotatef(a->angle, 0.0f, 0.0f, 1.0f);
-        glBindTexture(GL_TEXTURE_2D, g.enemyNone);
+        glBindTexture(GL_TEXTURE_2D, g.eagleNone);
         glEnable(GL_ALPHA_TEST);
         glAlphaFunc(GL_GREATER, 0.0f);
         glColor4ub(255,255,255,255);
