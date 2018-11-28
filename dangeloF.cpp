@@ -208,6 +208,7 @@ class Game {
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
         bool mouseThrustOn;
+        int lives;
         //--------------------------------
         struct timespec gTime;
         GLuint eagdeSprite;
@@ -218,6 +219,7 @@ class Game {
         //--------------------------------
     public:
         Game() {
+            lives = 0;
             clock_gettime(CLOCK_REALTIME, &gTime);
             ahead = NULL;
             //pauseTime = new GameTime;
@@ -342,8 +344,11 @@ void test()
 /*void fireball() 
   {
   }*/
-void deagle_time(Game &g)
+int deagle_time(Game &g, int cLife)
 {
+    //printf("Lives#1: %d\n",g.lives);
+    g.lives = cLife;
+    //printf("Lives#2: %d\n",g.lives);
     //a little time between each bullet
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
@@ -366,14 +371,16 @@ void deagle_time(Game &g)
             Flt ydir = sin(rad);
             b->pos[0] += xdir*20.0f;
             b->pos[1] += ydir*20.0f;
-            b->vel[0] += xdir*15.0f + rnd()*0.8;
-            b->vel[1] += ydir*15.0f + rnd()*0.8;
+            b->vel[0] += xdir*25.0f + rnd()*0.95;
+            b->vel[1] += ydir*25.0f + rnd()*0.95;
             b->color[0] = 1.0f;
             b->color[1] = 1.0f;
             b->color[2] = 1.0f;
             g.nbullets++;
         }
+        //  printf("Lives#3: %d\n",g.lives);
     }
+    return(g.lives);
 }
 void deagle_speed(Game &g, Global &gl) 
 {
