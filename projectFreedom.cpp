@@ -462,7 +462,7 @@ void physics();
 void render();
 extern void newScoreboard();
 extern void showMainMenu(int, GLuint, int);
-extern void showGameOver(int, GLuint);
+extern void showGameOver(int, GLuint, int);
 extern void showPauseMenu();
 extern void addPauseTime(struct timespec*);
 enum {
@@ -546,7 +546,7 @@ int main()
                                    newScoreboard();
                                    limitScoreboard--;
                                }
-                               showGameOver(gl.xres, gl.gameOverTexture);
+                               showGameOver(gl.xres, gl.gameOverTexture,gl.yres);
                                x11.swapBuffers();
                                break;
             case PAUSE_GAME:
@@ -733,7 +733,7 @@ void init_opengl()
     free(enemyData); 
     // game over screen
     glBindTexture(GL_TEXTURE_2D, gl.gameOverTexture);
-    unsigned char* gameOverData = buildAlphaData(&img[9]);
+    unsigned char* gameOverData = buildAlphaData(&img[8]);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w9, h9-50, 0,
@@ -1327,7 +1327,7 @@ void physics()
         //Draw the bullets
         if(g.gameover == true)
         {
-            showGameOver(0, gl.gameOverTexture);
+            showGameOver(0, gl.gameOverTexture,gl.yres);
         }
         Bullet *b = &g.barr[0];
         for (int i=0; i<g.nbullets; i++) {

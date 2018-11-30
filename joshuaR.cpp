@@ -188,7 +188,7 @@ void newScoreboard()
     }
     fout.close();
 }
-void showMainMenu(int x, int y, GLuint mainScreen) {   
+void showMainMenu(int x, GLuint mainScreen,int y) {   
     
     glColor3ub(255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
@@ -205,26 +205,26 @@ void showMainMenu(int x, int y, GLuint mainScreen) {
     glPopMatrix();
 }
 
-void showGameOver(int x, GLuint screen) {
+void showGameOver(int x, GLuint screen, int y) {
     glColor3ub(255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    int back = x -200 ;
+    int back = x - 200;
     glPushMatrix();
-    glTranslatef(255, 255, 0);
+    glTranslatef(178,178 ,0 );
     glBindTexture(GL_TEXTURE_2D, screen);
     glBegin(GL_QUADS);
-    glTexCoord2f(0.0f, 1.0f); glVertex2i(-back,-back);
-    glTexCoord2f(0.0f, 0.0f); glVertex2i(-back, back);
-    glTexCoord2f(1.0f, 0.0f); glVertex2i( back, back);
-    glTexCoord2f(1.0f, 1.0f); glVertex2i( back,-back);
+    glTexCoord2f(0.0f, 1.0f); glVertex2i(-350,-250);
+    glTexCoord2f(0.0f, 0.0f); glVertex2i(-350, y);
+    glTexCoord2f(1.0f, 0.0f); glVertex2i( x, y);
+    glTexCoord2f(1.0f, 1.0f); glVertex2i( x,-250);
 
     glEnd();
     glPopMatrix();
     Rect m;
     glPushMatrix();
-    glBegin(GL_QUADS);
-    glColor3ub(255, 0, 0);
+    //glBegin(GL_QUADS);
+    glColor3ub(0, 0, 0);
     m.bot = 600;
     m.left = 200;
     m.center = 0;
@@ -240,9 +240,11 @@ void showGameOver(int x, GLuint screen) {
     glPopMatrix();
     ggprint8b(&m, 16, 0x00ff0000, "THIS IS Game Over screen");
     displayScoreboard(m.left, m.bot, m.center);
+
 }
-void showPauseMenu(int x, int y, GLuint pauseScreen) {
-    glColor3ub(255,255,255);
+void showPauseMenu() {
+     //   int x, int y, GLuint pauseScreen) {
+   /* glColor3ub(255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
     glPushMatrix();
     glTranslatef(255, 255, 0);
@@ -254,7 +256,7 @@ void showPauseMenu(int x, int y, GLuint pauseScreen) {
     glTexCoord2f(1.0f, 1.0f); glVertex2i(x, -250);
 
     glEnd();
-    glPopMatrix();
+    glPopMatrix();*/
 
 }
 void resetScoreVariables() {
