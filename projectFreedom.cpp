@@ -273,7 +273,7 @@ class Game {
             //pauseTime = new GameTime;
             //runningTime = new GameTime;
             barr = new Bullet[MAX_BULLETS];
-            nasteroids = 0;
+            nasteroids = rand() % (20-10) - 10;
             lives = 3;
             nbullets = 0;
             mouseThrustOn = false;
@@ -307,7 +307,7 @@ class Game {
                 a->color[0] = 0.8;
                 a->color[1] = 0.8;
                 a->color[2] = 0.7;
-                a->vel[0] = (Flt)(rnd()*-8.0-1.0);
+                a->vel[0] = (Flt)(rnd()*-10.0-1.0);
                 a->vel[1] = (Flt)(0);//rnd()*2.0-1.0);
                 a->next = ahead;
                 if (ahead != NULL)
@@ -1453,6 +1453,23 @@ void render()
         glEnd();
         glPopMatrix();
         a = a->next;
+    }
+}
+extern void aResetGame(Asteroid&);
+void resetGame() {
+	Asteroid *a = g.ahead;
+    while(a) {
+		/*
+		//int piece = 0;
+		//int position = (piece % 4);
+		//a->pos[1] = (Flt)(250.0);
+		a->pos[1] = (Flt)(rand() % gl.yres);
+		//a->pos[0] = (Flt)(910 + 5 * 65);
+		a->pos[0] = (Flt)((gl.xres +500));
+		//piece++;
+		*/
+		aResetGame(*a);
+		a=a->next;
     }
 }
 
