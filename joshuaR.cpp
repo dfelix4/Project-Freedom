@@ -209,7 +209,7 @@ void showGameOver(int x, GLuint screen, int y) {
     glColor3ub(255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    int back = x - 200;
+    //int back = x - 200;
     glPushMatrix();
     glTranslatef(178,178 ,0 );
     glBindTexture(GL_TEXTURE_2D, screen);
