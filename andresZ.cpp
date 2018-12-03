@@ -409,3 +409,18 @@ void showEnemy(Game &g)
         a = a->next;
     }
 }
+
+void aResetGame(Asteroid &a)
+{
+	//srand(time(NULL));
+	//g.nasteroids = rand() %(20-10)-10;
+	//    while(a) {
+	//int piece = 0;
+	//int position = (piece % 4);
+	//a.pos[1] = (Flt)(250.0);
+	a.pos[1] = (Flt)(rand() % 950);
+	//a->pos[0] = (Flt)(910 + 5 * 65);
+	a.pos[0] = (Flt)((1250 +500));
+	//piece++;
+	//    }
+}
