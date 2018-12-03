@@ -431,11 +431,11 @@ void showBackground(int x,GLuint g)
 }
 void showFireBall(Global gl)
 {
-    float cx = gl.xres/2.0;
-    float cy = gl.yres/2.0;
+    //float cx = gl.xres/2.0;
+    //float cy = gl.yres/2.0;
 
-    float h = 80.0;
-    float w = 80.0;
+    //float h = 80.0;
+    //float w = 80.0;
     /////////////////////////////////////////////////////////////////////////////////
 
     //	timers.recordTime(&gl.exp.time);
