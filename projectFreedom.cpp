@@ -509,6 +509,8 @@ extern void showMainMenu(int, GLuint, int);
 extern void showGameOver(int, GLuint, int);
 extern void showPauseMenu();
 extern void addPauseTime(struct timespec*);
+
+void resetGame();
 enum {
     MAIN_MENU,
     GAME_RUNNING,
@@ -590,6 +592,7 @@ int main()
                                if (limitScoreboard) {
                                    newScoreboard();
                                    limitScoreboard--;
+				       resetGame();
                                }
                                showGameOver(gl.xres, gl.gameOverTexture,gl.yres);
                                x11.swapBuffers();
@@ -1345,7 +1348,8 @@ void physics()
 
 		if(g.lives <= 0)
 		{
-			float cx = gl.xres/2.0;
+			
+		    	float cx = gl.xres/2.0;
 			float cy = gl.yres/2.0;
 
 			float h = 80.0;
@@ -1523,4 +1527,5 @@ void resetGame() {
 		aResetGame(*a);
 		a=a->next;
     }
+    g.lives = 3;
 }
