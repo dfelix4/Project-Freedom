@@ -245,7 +245,7 @@ class Game {
         int nbullets;
         int lives;
         int died;
-        int kills;
+        int kilt;
         int mach;
         struct timespec bulletTimer;
         struct timespec mouseThrustTimer;
@@ -265,7 +265,7 @@ class Game {
     public:
         Game() {
             died = 0;
-            kills = 0;
+            kilt = 0;
             mach = 0;
             gameover = false;
             clock_gettime(CLOCK_REALTIME, &gTime);
@@ -931,9 +931,11 @@ int check_keys(XEvent *e)
                 gl.menuState = GAME_RUNNING;
             break;
         case XK_d:
+	    if (g.kilt >= 5 && g.kilt <= 7)
             bullet.rate ^= 1;
             break;
         case XK_m:
+	    if (g.kilt >=2 && g.kilt <5
             g.mach ^= 1;
             break;
         case XK_equal:
@@ -1132,6 +1134,7 @@ void physics()
                     deleteAsteroid(&g, a);
                     a = savea;
                     g.nasteroids--;
+		    g.kilt++;
                 }
 
                 //delete the bullet...
