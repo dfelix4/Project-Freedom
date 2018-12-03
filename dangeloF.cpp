@@ -301,6 +301,7 @@ class Game {
         }
 };
 #endif
+struct timespec st;
 void creditsD(int x, int y)
 {
     Rect r;
@@ -344,6 +345,7 @@ void test()
 /*void fireball() 
   {
   }*/
+
 int deagle_time(Game &g, int cLife)
 {
     //printf("Lives#1: %d\n",g.lives);
@@ -353,9 +355,12 @@ int deagle_time(Game &g, int cLife)
     struct timespec bt;
     clock_gettime(CLOCK_REALTIME, &bt);
     double ts = timeDiff(&g.bulletTimer, &bt);
+    printf("\n\nSOme shit %lf\n\n", ts);
     if (ts > 1.0) {
+        printf("\n\nSomething else %lf\n\n", ts);
         timeCopy(&g.bulletTimer, &bt);
         if (g.nbullets < MAX_BULLETS) {
+            printf("\n\nrandom shit or some\n\n");
             //shoot a bullet...
             //Bullet *b = new Bullet;
             Bullet *b = &g.barr[g.nbullets];
