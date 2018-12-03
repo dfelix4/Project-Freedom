@@ -935,7 +935,7 @@ int check_keys(XEvent *e)
             bullet.rate ^= 1;
             break;
         case XK_m:
-	    if (g.kilt >=2 && g.kilt <5
+	    if (g.kilt >=2 && g.kilt <5)
             g.mach ^= 1;
             break;
         case XK_equal:
