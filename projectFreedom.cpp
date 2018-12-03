@@ -604,7 +604,7 @@ int main()
                                    //clock_gettime(CLOCK_REALTIME, &lt->rTime);
                                    //timeCopy(&pt->rTime, &lt->rTime);
                                    printf("Copied TIME!\n");
-                                   paused++;
+                                   paused = true;
                                }
                                //addPauseTime(&pt->rTime);
                                showPauseMenu();
@@ -1349,11 +1349,11 @@ void physics()
 		if(g.lives <= 0)
 		{
 			
-		    	float cx = gl.xres/2.0;
-			float cy = gl.yres/2.0;
+		    	//float cx = gl.xres/2.0;
+			//float cy = gl.yres/2.0;
 
-			float h = 80.0;
-			float w = 80.0;
+			//float h = 80.0;
+			//float w = 80.0;
 			/////////////////////////////////////////////////////////////////////////////////
 
 			timers.recordTime(&gl.exp.time);
