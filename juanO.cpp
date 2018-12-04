@@ -475,3 +475,29 @@ void showFireBall(Global gl)
     glBindTexture(GL_TEXTURE_2D, 0);
     glDisable(GL_ALPHA_TEST);
 }
+void showLifeBar(int health, int max)
+{
+    //glClear(GL_COLOR_BUFFER_BIT);
+    glPushMatrix();
+    glBegin(GL_QUADS);
+    float barWidth;
+    float remaining = (float)health/max;
+    if (remaining == 1) {
+            barWidth = 100;
+    } else {
+        barWidth = remaining*100;
+    }
+    printf("B: %f, h: %d r:%f\n", barWidth, health, remaining);
+    glColor3ub(0, 0, 0);
+    //glTexCoord2f(0.0f, 1.0f); 
+    glVertex2i(0, 875);
+    //glTexCoord2f(0.0f, 0.0f); 
+    glVertex2i(0, 900);
+    //glTexCoord2f(1.0f, 1.0f); 
+    glVertex2i(barWidth*5, 900);
+    //glTexCoord2f(1.0f, 1.0f); 
+    glVertex2i(barWidth*5, 875);
+    glEnd();
+    glPopMatrix();
+
+}

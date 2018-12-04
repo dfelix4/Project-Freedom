@@ -78,15 +78,16 @@ void showJoshPicture(int x, int y, GLuint texid)
 //Add timespec struct in global class and use
 //clock_gettime(CLOCK_REALTIME, &'structName')
 //to pass in for g_time
-void newTime(struct timespec oldtime) {
+void newTime(struct timespec oldtime) 
+{
     Gametime *t = new Gametime;
     timeCopy(&oldtime, &t->newT);
 }
-void runningTime(struct timespec oldtime) {
+void runningTime(struct timespec oldtime) 
+{
     Gametime *t = new Gametime;
     oldTime += timeDiff(&oldtime, &t->newT);
     timeCopy(&oldtime, &t->newT);
-    //cout << "Old time: " << oldTime << endl;
 }
 int timeTotal(struct timespec* gTime) 
 {  
@@ -100,13 +101,11 @@ int timeTotal(struct timespec* gTime)
 void scoreAccumulator(int multiplier, int kills, struct timespec* global) 
 {   
     scoreOvertime++;
-        //scoreOvertime = + kills - oldTime + timeTotal(global);
     score = (scoreOvertime/30)*multiplier;
-    //cout << "Pause: " << passedTime << " time total: " << timeTotal(global) << endl;
-    //oldTime = 0;
     return;
 }
-void currentScore(int multiplier, int kills, bool on) {
+void currentScore(int multiplier, int kills, bool on) 
+{
     if(on) {
         score += multiplier*kills;
             on = 0;
@@ -120,7 +119,8 @@ int getScore()
 {                  
     return(score);
 }
-void setScore(int modifier) {
+void setScore(int modifier) 
+{
     score = modifier;
 }
 void addPauseTime(struct timespec* pause) {
@@ -134,14 +134,14 @@ void displayScoreboard(int x, int y, int o)
     Rect s;
     s.bot = y;
     s.left = x;
-    s.center = o;
+    s.center = 100;
     fin.open("scoreBoard.txt");
     if(fin.fail() ) {
         cout << "Error: Cannot open/find scoreboard.txt for reading.\n";
     }
     for(int i = 0; i<10; i++) {
         fin >> scoreboard[i];
-        ggprint16(&s, 16, 0x00ffff00, "\n%d. %d", i+1, scoreboard[i]);
+        ggprint16(&s, 16, 0xfffffff, "\n\n\n%d. %d\n\n\n", i+1, scoreboard[i]);
     }
     fin.close();
 }
@@ -188,8 +188,8 @@ void newScoreboard()
     }
     fout.close();
 }
-void showMainMenu(int x, GLuint mainScreen,int y) {   
-    
+void showMainMenu(int x, int y, GLuint mainScreen) 
+{       
     glColor3ub(255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
     glPushMatrix();
@@ -205,13 +205,12 @@ void showMainMenu(int x, GLuint mainScreen,int y) {
     glPopMatrix();
 }
 
-void showGameOver(int x, GLuint screen, int y) {
+void showGameOver(int x, int y, GLuint screen) 
+{
     glColor3ub(255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    //int back = x - 200;
     glPushMatrix();
-    glTranslatef(178,178 ,0 );
+    glTranslatef(178, 178, 0);
     glBindTexture(GL_TEXTURE_2D, screen);
     glBegin(GL_QUADS);
     glTexCoord2f(0.0f, 1.0f); glVertex2i(-350,-250);
@@ -222,9 +221,7 @@ void showGameOver(int x, GLuint screen, int y) {
     glEnd();
     glPopMatrix();
     Rect m;
-    glPushMatrix();
-    //glBegin(GL_QUADS);
-    glColor3ub(0, 0, 0);
+    glColor3ub(255, 0, 0);
     m.bot = 600;
     m.left = 200;
     m.center = 0;
@@ -238,13 +235,11 @@ void showGameOver(int x, GLuint screen, int y) {
     glVertex2i( 400,-400);
     glEnd();
     glPopMatrix();
-    ggprint8b(&m, 16, 0x00ff0000, "THIS IS Game Over screen");
     displayScoreboard(m.left, m.bot, m.center);
-
 }
-void showPauseMenu() {
-     //   int x, int y, GLuint pauseScreen) {
-   /* glColor3ub(255,255,255);
+void showPauseMenu(int x, int y, GLuint pauseScreen) 
+{
+    glColor3ub(255,255,255);
     glClear(GL_COLOR_BUFFER_BIT);
     glPushMatrix();
     glTranslatef(255, 255, 0);
@@ -256,10 +251,11 @@ void showPauseMenu() {
     glTexCoord2f(1.0f, 1.0f); glVertex2i(x, -250);
 
     glEnd();
-    glPopMatrix();*/
+    glPopMatrix();
 
 }
-void resetScoreVariables() {
+void resetScoreVariables() 
+{
     scoreOvertime = 0;
     setScore(0);
 }

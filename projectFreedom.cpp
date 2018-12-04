@@ -45,6 +45,7 @@ typedef Flt	Matrix[4][4];
 //constants
 const float TIMESLICE = 1.0f;
 const float GRAVITY = -0.2f;
+#define MAX_HEALTH 25
 #define PI 3.141592653589793
 #define ALPHA 1
 const int MAX_BULLETS = 11;
@@ -318,7 +319,7 @@ class Game {
             //runningTime = new GameTime;
             barr = new Bullet[MAX_BULLETS];
             nasteroids = rand() % (20-10) - 10;
-            lives = 3;
+            lives = MAX_HEALTH;
             nbullets = 0;
             mouseThrustOn = false;
             //build 10 asteroids...
@@ -509,9 +510,9 @@ int check_keys(XEvent *e);
 void physics();
 void render();
 extern void newScoreboard();
-extern void showMainMenu(int, GLuint, int);
-extern void showGameOver(int, GLuint, int);
-extern void showPauseMenu();
+extern void showMainMenu(int, int, GLuint);
+extern void showGameOver(int, int, GLuint);
+extern void showPauseMenu(int, int, GLuint);
 extern void addPauseTime(struct timespec*);
 
 void resetGame();
@@ -574,7 +575,7 @@ int main()
         }
         switch(gl.menuState) {
             case MAIN_MENU:
-                showMainMenu(gl.xres, gl.tex.titleTexture, gl.yres);
+                showMainMenu(gl.xres, gl.yres, gl.tex.titleTexture);
                 if (gl.credits) {
                     show_credits();
                 }
@@ -585,7 +586,6 @@ int main()
                                        newTime(g.gTime);
                                        limitScoreboard++;
                                    }
-                                   //printf("g.lives: %d\n", g.lives);
                                    paused = 0;
                                    physics();
                                    render();
@@ -598,20 +598,15 @@ int main()
                                    limitScoreboard--;
                                    resetGame();
                                }
-                               showGameOver(gl.xres, gl.gameOverTexture,gl.yres);
+                               showGameOver(gl.xres, gl.yres, gl.gameOverTexture);
                                x11.swapBuffers();
                                break;
             case PAUSE_GAME:
                                if (!paused) {
                                    runningTime(g.gTime);
-                                   //GameTime *lt = g.pauseTime;
-                                   //clock_gettime(CLOCK_REALTIME, &lt->rTime);
-                                   //timeCopy(&pt->rTime, &lt->rTime);
-                                   //printf("Copied TIME!\n");
                                    paused = true;
                                }
-                               //addPauseTime(&pt->rTime);
-                               showPauseMenu();
+                               showPauseMenu(gl.xres, gl.yres, gl.tex.backTexture);
                                x11.swapBuffers();
                                break;
 
@@ -1362,7 +1357,7 @@ void physics()
         }
     }
     //Juan Orozco???
-
+    extern void showLifeBar(int, int);
     extern int getScore();
     extern int timeTotal(struct timespec*);
     extern void scoreAccumulator(int, int, struct timespec*);
@@ -1388,7 +1383,6 @@ void physics()
         //----------------Juan
         //showBackground();
         showBackground(gl.xres,gl.tex.backTexture);
-
         //---------------------------DF
         glClear(GL_COLOR_BUFFER_BIT);
         glColor3f(1.0, 1.0, 1.0);
@@ -1401,16 +1395,18 @@ void physics()
         glTexCoord2f(gl.tex.xc[1], gl.tex.yc[1]); glVertex2i(gl.xres, 0);
         glEnd();
         glPopMatrix();
-
+        
+        showLifeBar(g.lives, MAX_HEALTH);
         //--------------------Juan
         //showEagle();
         showEagle(g.ship.pos[0], g.ship.pos[1], g.eagleNone);
 
-        ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
-        ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
-        ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
-        ggprint8b(&r, 16, 0x00ffff00, "n asteroids destroyed: ");
-        ggprint8b(&r, 16, 0x00ffff00, "D for Desert Eagle,");
+        ggprint8b(&r, 16, 0x00000000, "3350 - Project Freedom");
+        //ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
+        //ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
+        //ggprint8b(&r, 16, 0x00ffff00, "n asteroids destroyed: ");
+        ggprint8b(&r, 16, 0x00ffff00, "D for Desert Eagle");
+        ggprint8b(&r, 16, 0x00ffff00, "M for Machine Gun");
         //---------------------------Josh
         ggprint8b(&r, 16, 0x00ffff00, "Score: %d", getScore());
         //-------------
@@ -1579,9 +1575,12 @@ void physics()
             a = a->next;
         }
     }
-
+    extern void resetScoreVariables();
     extern void aResetGame(Asteroid&);
     void resetGame() {
+        g.ship.pos[1] = gl.yres/2;
+        g.ship.pos[0] = gl.xres/2;
+        resetScoreVariables();
         Asteroid *a = g.ahead;
         while(a) {
             /*
@@ -1596,6 +1595,7 @@ void physics()
             aResetGame(*a);
             a=a->next;
         }
+
         g.lives = 3;
         g.kilt = 0;
     }
